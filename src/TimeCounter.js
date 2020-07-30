@@ -2,6 +2,7 @@
 /* @jsxFrag React.Fragment */
 import { Global, css, jsx } from '@emotion/core';
 import React from 'react';
+import { SnackbarProvider, useSnackbar } from 'notistack';
 
 function zerofill(number) {
   if (number >= 0 && number <= 9) {
@@ -11,9 +12,18 @@ function zerofill(number) {
   return number;
 }
 
-export default function TimeCounter() {
+const snackbarOptions = {
+  anchorOrigin: {
+    horizontal: 'center',
+    vertical: 'bottom',
+  },
+  autoHideDuration: 2000,
+};
+
+function TimeCounterChild() {
   const [seconds, setSeconds] = React.useState(60 * 5);
   const [active, setActive] = React.useState(false);
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
   const changeTimeEventHandler = React.useCallback(
     (e) => {
@@ -28,9 +38,17 @@ export default function TimeCounter() {
 
   const changeActiveEventHandler = React.useCallback(
     (e) => {
-      if (e.keyCode === 32) setActive(!active);
+      if (e.keyCode === 32) {
+        if (active) {
+          enqueueSnackbar('Paused the timer', snackbarOptions);
+        } else {
+          enqueueSnackbar('Resumed the timer', snackbarOptions);
+        }
+
+        setActive(!active);
+      }
     },
-    [active],
+    [active, enqueueSnackbar],
   );
 
   React.useEffect(() => {
@@ -70,7 +88,7 @@ export default function TimeCounter() {
   }, [seconds]);
 
   return (
-    <>
+    <div>
       <Global
         styles={css`
           body {
@@ -98,6 +116,14 @@ export default function TimeCounter() {
       >
         {timerValue}
       </div>
-    </>
+    </div>
+  );
+}
+
+export default function TimeCounter() {
+  return (
+    <SnackbarProvider maxSnack={1}>
+      <TimeCounterChild />
+    </SnackbarProvider>
   );
 }
