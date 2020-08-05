@@ -25,16 +25,13 @@ function TimeCounterChild() {
   const [active, setActive] = React.useState(false);
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
-  const changeTimeEventHandler = React.useCallback(
-    (e) => {
-      if (e.keyCode === 37) {
-        setSeconds(seconds - 1);
-      } else if (e.keyCode === 39) {
-        setSeconds(seconds + 1);
-      }
-    },
-    [seconds],
-  );
+  const changeTimeEventHandler = React.useCallback((e) => {
+    if (e.keyCode === 37) {
+      setSeconds((seconds) => seconds - 1);
+    } else if (e.keyCode === 39) {
+      setSeconds((seconds) => seconds + 1);
+    }
+  }, []);
 
   const changeActiveEventHandler = React.useCallback(
     (e) => {
